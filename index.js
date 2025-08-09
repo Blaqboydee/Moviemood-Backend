@@ -9,7 +9,25 @@ const foodrouter = require("./routes/foodanddrinks.route")
 const Bookingrouter = require("./routes/bookings.route")
 const authrouter = require("./routes/auth.route")
 
-app.use(cors({origin:"*"})) 
+const allowedOrigins = [
+  "http://localhost:5173",               // Local Vite dev
+  "https://moviemoodcinema.vercel.app"   // Production frontend
+];
+
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      // Allow requests with no origin (like mobile apps, curl)
+      if (!origin) return callback(null, true);
+
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+      return callback(new Error("Not allowed by CORS"));
+    },
+    credentials: true
+  })
+);
 app.use(express.json({extended:true, limit:"50mb"}))
 app.use("/movie", movierouter)
 app.use("/showtime", showtimerouter)
