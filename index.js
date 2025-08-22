@@ -10,7 +10,7 @@ const Bookingrouter = require("./routes/bookings.route")
 const authrouter = require("./routes/auth.route")
 
 const allowedOrigins = [
-  "http://localhost:5173",               // Local Vite dev
+  "http://localhost:5174",               // Local Vite dev
   "https://moviemoodcinema.vercel.app"   // Production frontend
 ];
 

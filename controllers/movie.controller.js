@@ -16,10 +16,10 @@ const Createmovie = async (req, res) => {
     }
 
     const imageurl = await cloudinary.uploader.upload(movieImage);
-    console.log("Image URL:", imageurl.secure_url);
+    
 
     const backdropurl = await cloudinary.uploader.upload(movieBackdrop);
-    console.log("Image URL:", backdropurl.secure_url);
+  
 
     if (!imageurl || !imageurl.secure_url) {
       return res
@@ -41,7 +41,7 @@ const Createmovie = async (req, res) => {
     });
 
 
-    console.log("Slug:", slug);
+    
 
   const createdmovie = await moviemodel.create({
   title,
@@ -104,7 +104,7 @@ const Getmovie = async (req, res) => {
     if (!theMovie) {
       return res.status(404).send({ message: "Movie not found", status: false });
     }
-     console.log(theMovie);
+    
      
     return res.status(200).send({
       message: "Movie fetched successfully",

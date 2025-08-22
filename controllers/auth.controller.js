@@ -14,7 +14,7 @@ const generateToken = (user) => {
 
 const googleLogin = async (req, res) => {
   try {
-    const { token } = req.body;
+    const { token, adminPassword } = req.body;
 
     if (!token) {
       return res.status(400).json({ success: false, message: "No token provided" });
@@ -29,36 +29,55 @@ const googleLogin = async (req, res) => {
     const payload = ticket.getPayload();
     const { name, email, picture: profilePicture, sub: googleId } = payload;
 
+    // Check admin credentials if admin password is provided
+    let isAdmin = false;
+    if (adminPassword) {
+      if (adminPassword === process.env.ADMIN_PASSWORD) {
+        isAdmin = true;
+      } else {
+        return res.status(401).json({ 
+          success: false, 
+          message: "Invalid admin password" 
+        });
+      }
+    }
+
     // Check if user exists
-let isNewUser = false;
-let user = await UserModel.findOne({ email });
+    let isNewUser = false;
+    let user = await UserModel.findOne({ email });
 
-if (!user) {
-  isNewUser = true;
-  user = new UserModel({
-    name,
-    email,
-    profilePicture,
-    googleId,
-    isAdmin:false
-  });
-  await user.save();
-}
+    if (!user) {
+      isNewUser = true;
+      user = new UserModel({
+        name,
+        email,
+        profilePicture,
+        googleId,
+        isAdmin // Set admin status based on verification
+      });
+      await user.save();
+    } else {
+      // Update existing user's admin status if they provided correct admin password
+      if (adminPassword && isAdmin) {
+        user.isAdmin = true;
+        await user.save();
+      }
+    }
 
-const appToken = generateToken(user);
+    const appToken = generateToken(user);
 
-return res.status(isNewUser ? 201 : 200).json({
-  success: true,
-  token: appToken,
-  message: isNewUser ? "Account created successfully" : "Login successful",
-  user: {
-    id: user._id,
-    name: user.name,
-    email: user.email,
-    profilePicture: user.profilePicture
-  }
-});
-
+    return res.status(isNewUser ? 201 : 200).json({
+      success: true,
+      token: appToken,
+      message: isNewUser ? "Account created successfully" : "Login successful",
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        profilePicture: user.profilePicture,
+        isAdmin: user.isAdmin
+      }
+    });
 
   } catch (error) {
     console.error("Google login error:", error);

@@ -37,10 +37,10 @@ async function fixCastImages() {
 
     movie.cast = updatedCast;
     await movie.save();
-    console.log(`✔️ Updated cast images for: ${movie.title}`);
+   
   }
 
-  console.log("✅ All cast images updated.");
+ 
   mongoose.disconnect();
 }
 

@@ -4,7 +4,7 @@ const Showtime = require("../models/showtime.model")
 const Fetchshowtimes = async(req, res) => {
   try {
     const allshowtimes = await Showtime.find(); // ✅ Use await here
-    // console.log(allshowtimes); // Now logs real documents
+ 
 
     res.status(200).json({
       status: true,

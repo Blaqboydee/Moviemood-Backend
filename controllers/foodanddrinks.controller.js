@@ -53,15 +53,14 @@ const Createfood = async (req, res) => {
 
 const Fetchallfoods = async (req, res) => {
   try {
-    const allfoods = await FoodItem.find(); // ✅ Use await here
-    console.log(allfoods); // Now logs real documents
+    const allfoods = await FoodItem.find(); 
 
     res.status(200).json({
       status: true,
       data: allfoods,
     });
   } catch (error) {
-    console.log(error.message);
+ 
     res.status(500).json({
       status: false,
       message: "Internal server error",
@@ -69,4 +68,55 @@ const Fetchallfoods = async (req, res) => {
   }
 };
 
-module.exports = {Createfood, Fetchallfoods};
+
+
+
+const DeleteFoodItem = async (req, res) => {
+  try {
+    const { id } = req.params; // Get the food ID from URL parameters
+
+    // Check if the food item exists
+    const foodItem = await FoodItem.findById(id);
+    
+    if (!foodItem) {
+      return res.status(404).json({
+        status: false,
+        message: "Food item not found",
+      });
+    }
+
+    // Delete the food item
+    await FoodItem.findByIdAndDelete(id);
+
+    res.status(200).json({
+      status: true,
+      message: "Food item deleted successfully",
+      data: {
+        deletedId: id,
+        deletedItem: foodItem.name || "Food item" 
+      }
+    });
+  } catch (error) {
+ 
+    
+    // Handle invalid ObjectId format
+    if (error.name === 'CastError') {
+      return res.status(400).json({
+        status: false,
+        message: "Invalid food item ID format",
+      });
+    }
+
+    res.status(500).json({
+      status: false,
+      message: "Internal server error",
+    });
+  }
+};
+
+
+
+
+
+
+module.exports = {Createfood, Fetchallfoods, DeleteFoodItem};

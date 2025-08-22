@@ -6,10 +6,7 @@ const Bookseats = async (req, res) => {
   try {
     const { userEmail, showtimeId, seats, totalPrice, seatsTosend, time, date, FoodDrinks, movieTitle } = req.body;
 
-    console.log("Showtime ID:", showtimeId);
-    console.log("Seats to book:", seats);
-    console.log("Booked by:", userEmail);
-    console.log("Seats to send:", seatsTosend);
+
     
 
     // Find the showtime
@@ -95,7 +92,7 @@ const Bookseats = async (req, res) => {
 const getUserBookings = async (req, res) => {
   try {
     const { userEmail } = req.params;
-    console.log(userEmail);
+
     
     if (!userEmail) {
       return res.status(400).json({
@@ -107,8 +104,7 @@ const getUserBookings = async (req, res) => {
     const bookings = await BookingModel.find({ userEmail })
       .populate('showtimeId')
       .sort({ bookedAt: -1 });
-     console.log(bookings);
-     
+   
     res.status(200).json({
       success: true,
       message: "Bookings retrieved successfully",
